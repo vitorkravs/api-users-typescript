@@ -6,18 +6,18 @@ import { User } from "../../models/user";
 export class MongoDeleteUserRepository implements IDeleteUserRepository {
   async deleteUser(id: string): Promise<User> {
     const user = await MongoClient.db
-      .collection("users")
+      .collection<Omit<User, "id">>("users")
       .findOne({ _id: new ObjectId(id) });
 
     if (!user) {
       throw new Error("User not found");
     }
 
-    const { deleteCounts } = await MongoClient.db
+    const { deletedCount } = await MongoClient.db
       .collection("users")
       .deleteOne({ _id: new ObjectId(id) });
 
-    if (!deleteCounts) {
+    if (!deletedCount) {
       throw new Error("User not deleted");
     }
 
